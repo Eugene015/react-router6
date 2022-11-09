@@ -1,10 +1,10 @@
 import React from "react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useParams } from "react-router-dom";
 
 const UsersList = () => {
   return (
     <>
-      <h1 className="text-3xl font-bold pb-6">Users List</h1>
+      <h1 className="text-3xl font-bold py-6">Users Layout</h1>
 
       <ul className="list-none pb-6">
         <li>
@@ -24,11 +24,11 @@ const UsersList = () => {
         </li>
       </ul>
 
+      <Outlet />
+
       <div>
         <Link to="/">Home page</Link>
       </div>
-
-      <Outlet />
     </>
   );
 };

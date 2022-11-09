@@ -12,9 +12,8 @@ const UserPage = () => {
         <NavLink to="edit">User edit page</NavLink>
       </div>
       <div>
-        <NavLink to="userslist">Users list</NavLink>
+        <NavLink to="users">Users list</NavLink>
       </div>
-      <Outlet />
     </>
   );
 };

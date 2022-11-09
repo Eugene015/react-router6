@@ -10,7 +10,7 @@ const EditUserPage = () => {
     <>
       <h1 className="text-3xl font-bold py-6">Edit User Page</h1>
       <div>
-        <NavLink to="">User Page</NavLink>
+        <NavLink to=":userId">User Page</NavLink>
       </div>
       <div>
         <NavLink onClick={handleClick}>Another User Page</NavLink>

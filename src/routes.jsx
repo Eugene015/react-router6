@@ -3,47 +3,38 @@ import EditUserPage from "./EditUserPage";
 import HomePage from "./HomePage";
 import UserPage from "./UserPage";
 import UsersList from "./UsersList";
-import Users from "./Users";
 
 const routes = () => [
   {
-    path: "",
+    path: "/",
     element: <HomePage />,
-  },
-  {
-    path: "users/*",
-    element: <Users />,
     children: [
       {
-        path: "",
-        element: <Navigate to="/users/userslist" />,
-      },
-      {
-        path: "userslist/*",
+        path: "users",
         element: <UsersList />,
         children: [
           {
-            path: ":userId/*",
+            path: "",
+            element: <Navigate to="/:userId/profile" />,
+          },
+          {
+            path: ":userId",
             element: <UserPage />,
-            children: [
-              {
-                path: "",
-                element: <Navigate to="profile" />,
-              },
-              { path: "profile", element: <EditUserPage /> },
-            ],
+          },
+
+          { path: "edit", element: <EditUserPage /> },
+          {
+            path: "*",
+            element: <Navigate to="/:userId/profile" />,
           },
         ],
       },
-      {
-        path: "*",
-        element: <Navigate to="" />,
-      },
     ],
   },
+
   {
     path: "*",
-    element: <Navigate to="" />,
+    element: <Navigate to="/" />,
   },
 ];
 
