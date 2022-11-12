@@ -1,29 +1,30 @@
 import React from "react";
 
 import {
-  Link,
   Navigate,
   NavLink,
   Outlet,
   Route,
   Routes,
-  useNavigate,
+  useLocation,
   useParams,
 } from "react-router-dom";
 
 function App() {
+  const { pathname } = useLocation();
   return (
     <div className="p-8">
       <Routes>
         <Route index element={<HomePage />} />
         <Route path="users" element={<Users />}>
+          <Route index element={<UsersList />} />
           <Route
             path=":userId"
-            element={<Navigate to="/users/:userId/profile" />}
+            element={<Navigate to={`${pathname}/profile`} />}
           />
-          <Route path="profile" element={<UserPage />} />
-          <Route path="edit" element={<EditUserPage />} />
-          <Route path="*" element={<Navigate to="/users/:userId/profile" />} />
+          <Route path=":userId/profile" element={<UserPage />} />
+          <Route path=":userId/edit" element={<EditUserPage />} />
+          <Route path="*" element={<Navigate to={`users/:userId/profile`} />} />
         </Route>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
@@ -40,11 +41,11 @@ const HomePage = () => {
   );
 };
 
-const Users = ({ children }) => {
+const Users = () => {
   return (
     <>
-      <h1>Users Layout</h1>
-      {children}
+      <h1 className="text-3xl font-bold pb-6">Users Layout</h1>
+      <Outlet />
     </>
   );
 };
@@ -72,62 +73,58 @@ const UsersList = () => {
       title: "User 4",
     },
   ];
+  const { pathname } = useLocation();
   return (
     <>
       <h1 className="text-3xl font-bold py-6">Users Layout</h1>
-
-      {users.map((user) => {
-        return (
-          <>
-            <ul className="list-none pb-6">
-              <li key={user.id}>
-                <Link to={`/users/${user.id}`}>{user.title}</Link>
-              </li>
-            </ul>
-          </>
-        );
-      })}
+      <ul className="list-none pb-6">
+        {users.map((user) => (
+          <li key={user.id}>
+            <NavLink to={`${pathname}/${user.id}`}>{user.title}</NavLink>
+          </li>
+        ))}
+      </ul>
 
       <div>
-        <Link to="/">Home page</Link>
+        <NavLink to="/">Home page</NavLink>
       </div>
     </>
   );
 };
 
-const UserPage = () => {
-  const { userBlaId } = useParams();
-  console.log(userBlaId);
+const UserPage = (users) => {
+  const { userId } = useParams();
+
   return (
     <>
       <h1 className="text-3xl font-bold py-6">User Page</h1>
-      <p>userId: {`${userBlaId}`}</p>
       <div>
-        <NavLink to="edit">User edit page</NavLink>
+        <NavLink to={`/users/${userId}/edit`}>User edit page</NavLink>
       </div>
       <div>
-        <NavLink to="users">Users list</NavLink>
+        <NavLink to="/users">Users list</NavLink>
       </div>
+      <div>UserId: {userId}</div>
     </>
   );
 };
 
 const EditUserPage = () => {
-  const navigate = useNavigate();
-  const handleClick = () => {
-    navigate(1);
-  };
+  const { userId } = useParams();
+
   return (
     <>
       <h1 className="text-3xl font-bold py-6">Edit User Page</h1>
       <div>
-        <NavLink to=":userId">User Page</NavLink>
+        <NavLink to={`/users/${userId}/profile`}>User Page</NavLink>
       </div>
       <div>
-        <NavLink onClick={handleClick}>Another User Page</NavLink>
+        <NavLink to={`/users/${Number(userId) + 1}/profile`}>
+          Another User Page
+        </NavLink>
       </div>
       <div>
-        <NavLink to="userlist">Users List</NavLink>
+        <NavLink to="/users">Users List</NavLink>
       </div>
     </>
   );
