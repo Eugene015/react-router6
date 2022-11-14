@@ -1,133 +1,111 @@
-import React from "react";
-
 import {
-  Navigate,
-  NavLink,
-  Outlet,
-  Route,
-  Routes,
-  useLocation,
-  useParams,
+    Navigate,
+    NavLink,
+    Outlet,
+    useParams,
+    useRoutes,
 } from "react-router-dom";
 
 function App() {
-  const { pathname } = useLocation();
-  return (
-    <div className="p-8">
-      <Routes>
-        <Route index element={<HomePage />} />
-        <Route path="users" element={<Users />}>
-          <Route index element={<UsersList />} />
-          <Route
-            path=":userId"
-            element={<Navigate to={`${pathname}/profile`} />}
-          />
-          <Route path=":userId/profile" element={<UserPage />} />
-          <Route path=":userId/edit" element={<EditUserPage />} />
-          <Route path="*" element={<Navigate to={`users/:userId/profile`} />} />
-        </Route>
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </div>
-  );
+    const routes = useRoutes([
+        {
+            path: "/",
+            element: <MainPage />,
+        },
+        {
+            path: "users",
+            element: <UsersLayout />,
+            children: [
+                { index: true, element: <UserListPage /> },
+                {
+                    path: ":userId",
+                    element: <Outlet />,
+                    children: [
+                        { path: "profile", element: <UserProfilePage /> },
+                        { path: "edit", element: <EditUserPage /> },
+                        { index: true, element: <Navigate to='./profile' /> },
+                        { path: "*", element: <Navigate to='../profile' /> },
+                    ],
+                },
+            ],
+        },
+        { path: "*", element: <Navigate to='/' /> },
+    ]);
+    return (
+        <div className='App'>
+            <h1> App Layout</h1>
+            <NavLink to='/users'>Users list Page</NavLink>
+            {routes}
+        </div>
+    );
 }
-
-const HomePage = () => {
-  return (
-    <>
-      <h1 className="text-3xl font-bold pb-6">App Layout</h1>
-      <NavLink to="users">Users list</NavLink>
-    </>
-  );
-};
-
-const Users = () => {
-  return (
-    <>
-      <h1 className="text-3xl font-bold pb-6">Users Layout</h1>
-      <Outlet />
-    </>
-  );
-};
-
-const UsersList = () => {
-  const users = [
-    {
-      id: 0,
-      title: "User 0",
-    },
-    {
-      id: 1,
-      title: "User 1",
-    },
-    {
-      id: 2,
-      title: "User 2",
-    },
-    {
-      id: 3,
-      title: "User 3",
-    },
-    {
-      id: 4,
-      title: "User 4",
-    },
-  ];
-  const { pathname } = useLocation();
-  return (
-    <>
-      <h1 className="text-3xl font-bold py-6">Users Layout</h1>
-      <ul className="list-none pb-6">
-        {users.map((user) => (
-          <li key={user.id}>
-            <NavLink to={`${pathname}/${user.id}`}>{user.title}</NavLink>
-          </li>
-        ))}
-      </ul>
-
-      <div>
-        <NavLink to="/">Home page</NavLink>
-      </div>
-    </>
-  );
-};
-
-const UserPage = (users) => {
-  const { userId } = useParams();
-
-  return (
-    <>
-      <h1 className="text-3xl font-bold py-6">User Page</h1>
-      <div>
-        <NavLink to={`/users/${userId}/edit`}>User edit page</NavLink>
-      </div>
-      <div>
-        <NavLink to="/users">Users list</NavLink>
-      </div>
-      <div>UserId: {userId}</div>
-    </>
-  );
-};
-
-const EditUserPage = () => {
-  const { userId } = useParams();
-
-  return (
-    <>
-      <h1 className="text-3xl font-bold py-6">Edit User Page</h1>
-      <div>
-        <NavLink to={`/users/${userId}/profile`}>User Page</NavLink>
-      </div>
-      <div>
-        <NavLink to={`/users/${Number(userId) + 1}/profile`}>
-          Another User Page
-        </NavLink>
-      </div>
-      <div>
-        <NavLink to="/users">Users List</NavLink>
-      </div>
-    </>
-  );
-};
-
+function MainPage() {
+    return <h1>MainPage</h1>;
+}
+function UsersLayout() {
+    // const { path } = useRouteMatch();
+    return (
+        <div>
+            <h1>Users Layout</h1>
+            <NavLink to='/'>Main Page</NavLink>
+            <Outlet />
+        </div>
+    );
+}
+function UserListPage() {
+    // const { path } = useRouteMatch();
+    return (
+        <div>
+            <h1> User List Page</h1>
+            <ul>
+                {new Array(5).fill("").map((_, index) => (
+                    <li key={"user_list_component_" + index}>
+                        <NavLink to={index + "/profile"}>User {index}</NavLink>
+                    </li>
+                ))}
+            </ul>
+        </div>
+    );
+}
+function UserProfilePage() {
+    const { userId } = useParams();
+    return (
+        <div>
+            <h1>UserPage</h1>
+            <ul>
+                <li>
+                    <NavLink to='/users'>Users List page</NavLink>
+                </li>
+                <li>
+                    <NavLink to={`/users/${userId}/edit`}>
+                        Edit this user
+                    </NavLink>
+                </li>
+            </ul>
+            <p> userId:{userId}</p>
+        </div>
+    );
+}
+function EditUserPage() {
+    const { userId } = useParams();
+    return (
+        <div>
+            <h1>Edit User Page</h1>
+            <ul>
+                <li>
+                    <NavLink to={"/users/" + userId}>User profile Page</NavLink>
+                </li>
+                <li>
+                    <NavLink to={"/users/" + (+userId + 1)}>
+                        {" "}
+                        Another User
+                    </NavLink>
+                </li>
+                <li>
+                    <NavLink to={"/users"}> Users List page</NavLink>
+                </li>
+            </ul>
+        </div>
+    );
+}
 export default App;
